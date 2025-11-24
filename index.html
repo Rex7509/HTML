@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>皮克敏性格圖鑑：你是哪種小跟班？</title>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-color: #4caf50; --text-color: #2d3436; }
+
+        body {
+            font-family: 'Varela Round', "微軟正黑體", sans-serif;
+            margin: 0; padding: 15px; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--text-color); background-color: #2d3436;
+            background-image: url('images/pikmin_background.jpg');
+            background-repeat: no-repeat; background-position: center center;
+            background-attachment: fixed; background-size: cover; user-select: none;
+        }
+
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2); pointer-events: none; z-index: -1; }
+        .container { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); width: 100%; max-width: 500px; padding: 30px 20px; border-radius: 30px; border: 6px solid #8bc34a; box-shadow: 0 15px 40px rgba(0,0,0,0.3); text-align: center; position: relative; max-height: 95vh; overflow-y: auto; display: flex; flex-direction: column; }
+        .container::-webkit-scrollbar { width: 0px; }
+        .audio-control { position: absolute; top: 15px; right: 15px; background: #fff; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; font-size: 1.2rem; z-index: 100; transition: transform 0.2s; border: 2px solid #eee; }
+        .audio-control:active { transform: scale(0.9); }
+
+        h1 { font-size: 1.6rem; color: #2e7d32; margin: 10px 0; text-shadow: 2px 2px 0 #fff; }
+        p.subtitle { color: #555; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.5; }
+
+        .home-pikmin-squad { display: flex; justify-content: center; align-items: center; gap: 15px; margin: 20px 0; }
+        .home-pikmin-squad img {
+            width: 75px;
+            filter: drop-shadow(0 8px 8px rgba(0,0,0,0.2));
+            animation: individual-float 3s infinite ease-in-out;
+        }
+        .home-pikmin-squad img:nth-child(2) { animation-delay: 0.2s; }
+        .home-pikmin-squad img:nth-child(3) { animation-delay: 0.4s; }
+        .home-pikmin-squad img:nth-child(4) { animation-delay: 0.6s; }
+        .home-pikmin-squad img:nth-child(5) { animation-delay: 0.8s; }
+        @keyframes individual-float { 0% { transform: translateY(0); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0); } }
+
+        .btn { border: none; padding: 14px 20px; font-size: 1rem; border-radius: 50px; cursor: pointer; transition: all 0.1s; width: 100%; margin-bottom: 12px; box-shadow: 0 5px 0 rgba(0,0,0,0.2); font-family: 'Varela Round', sans-serif; display: block; box-sizing: border-box; text-decoration: none; position: relative; overflow: hidden; border: 2px solid rgba(255,255,255,0.5); }
+        .btn:active { transform: translateY(4px); box-shadow: 0 0 0; }
+        .btn-primary { background-color: var(--primary-color); color: white; box-shadow: 0 5px 0 #2e7d32; }
+        .btn-info { background-color: #ffca28; color: #5d4037; box-shadow: 0 5px 0 #ff8f00; }
+        .btn-secondary { background-color: #90a4ae; color: white; box-shadow: 0 5px 0 #546e7a; }
+        
+        .option-btn { background-color: #fff; color: var(--text-color); border: 2px solid #e0e0e0; box-shadow: 0 4px 0 #dcdcdc; text-align: left; padding-left: 25px; font-weight: bold; }
+        .option-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background-color: #e8f5e9; }
+        .progress-container { background-color: #e0e0e0; border-radius: 20px; margin-bottom: 35px; height: 12px; position: relative; }
+        .progress-fill { height: 100%; background-color: #8bc34a; width: 0%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 20px; position: relative; }
+        .progress-fill::after { content: '🌱'; position: absolute; right: -10px; top: -20px; font-size: 1.8rem; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); z-index: 10; }
+
+        .guide-book { background-color: #fffde7; padding: 15px; border-radius: 15px; border: 3px dashed #fbc02d; text-align: left; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(255, 241, 118, 0.3); }
+        .guide-item { border-bottom: 2px dashed rgba(0,0,0,0.1); margin-bottom: 10px; background: rgba(255,255,255,0.5); border-radius: 10px; overflow: hidden; }
+        .guide-summary { display: flex; align-items: center; gap: 15px; padding: 12px; cursor: pointer; font-weight: bold; list-style: none; transition: background 0.2s; color: #444; }
+        .guide-summary:hover { background: rgba(255,255,255,0.8); }
+        .guide-summary::-webkit-details-marker { display: none; }
+        .guide-icon { width: 75px; height: 75px; object-fit: contain; }
+        .guide-summary:hover .guide-icon { animation-duration: 0.5s; animation-iteration-count: 1; animation-fill-mode: forwards; }
+        @keyframes anim-red    { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(-10deg); } } @keyframes anim-yellow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px) scale(1.2); } } @keyframes anim-blue   { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(15deg) scale(1.2); } 75% {transform: rotate(-15deg) scale(1.2);}} @keyframes anim-purple { 0% {transform: translateY(0);} 40% {transform: translateY(-5px) scale(1.2);} 80% {transform: translateY(2px) scale(0.9);} 100% {transform: translateY(0) scale(1);}} @keyframes anim-white  { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } } @keyframes anim-rock   { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } } @keyframes anim-pink   { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(5deg) scale(1.2); } } @keyframes anim-ice    { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(1.3) rotate(10deg); opacity: 0.8; } } @keyframes anim-glow   { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(2) drop-shadow(0 0 5px #cddc39); transform: scale(1.2); } }
+        .guide-summary:hover .icon-red { animation-name: anim-red; } .guide-summary:hover .icon-yellow { animation-name: anim-yellow; } .guide-summary:hover .icon-blue { animation-name: anim-blue; } .guide-summary:hover .icon-purple { animation-name: anim-purple; } .guide-summary:hover .icon-white { animation-name: anim-white; } .guide-summary:hover .icon-rock { animation-name: anim-rock; } .guide-summary:hover .icon-pink { animation-name: anim-pink; } .guide-summary:hover .icon-ice { animation-name: anim-ice; } .guide-summary:hover .icon-glow { animation-name: anim-glow; }
+        .guide-content { padding: 0 15px 15px 15px; font-size: 0.9rem; color: #5d4037; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .game-container { position: relative; width: 100%; aspect-ratio: 1 / 1.2; background: #a5d6a7; border-radius: 15px; overflow: hidden; border: 4px solid #388e3c; margin-top: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); box-sizing: border-box; cursor: none; }
+        .hud { position: absolute; top: 8px; left: 10px; right: 10px; display: flex; justify-content: space-between; font-weight: bold; color: white; text-shadow: 1px 1px 2px #000; z-index: 20; pointer-events: none; font-size: 0.9rem; }
+        .hud-item { background: rgba(0,0,0,0.3); padding: 3px 8px; border-radius: 20px; }
+        .game-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; color: white; backdrop-filter: blur(5px); }
+        #whistle { position: absolute; border: 2px solid white; border-radius: 50%; width: 45px; height: 45px; transform: translate(-50%, -50%); pointer-events: none; z-index: 100; transition: width 0.1s, height 0.1s, box-shadow 0.1s; }
+        #whistle.active { width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 15px cyan, inset 0 0 10px cyan; }
+        .wandering-pikmin { position: absolute; width: 60px; height: 60px; will-change: transform; transition: transform 0.2s ease-out; }
+        .wandering-pikmin img { width: 100%; height: 100%; object-fit: contain; }
+        .wandering-pikmin.collected { animation: collected-anim 0.4s forwards; }
+        @keyframes collected-anim { 0% { transform: scale(1) rotate(0); } 50% { transform: scale(1.4) rotate(15deg) translateY(-15px); } 100% { transform: scale(0) rotate(-15deg) translateY(45px); opacity: 0; } }
+
+        .result-avatar {
+            width: 220px; height: 220px; 
+            background-color: #3a3a3a; 
+            border: 6px solid #555; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%); 
+            z-index: 2;
+        }
+        .result-avatar img { width: 90%; height: 90%; object-fit: contain; }
+        
+        .result-header {
+            background: #4a5c33;
+            color: white; 
+            padding-top: 130px; 
+            padding-bottom: 20px;
+            border-radius: 20px; 
+            margin-top: 110px; 
+            position: relative; 
+            z-index: 1;
+            border: none;
+        }
+        .result-title { font-size: 2.2rem; font-weight: bold; }
+        
+        .result-details { background: #fafafa; padding: 20px; border-radius: 15px; margin: 15px 0; text-align: left; }
+        .result-details h4 { margin: 0 0 8px 0; font-size: 0.9rem; color: #333; border-left: 4px solid var(--primary-color); padding-left: 10px; }
+        .result-details p { margin: 0 0 15px 0; font-size: 0.95rem; line-height: 1.6; color: #555; }
+        .result-details p:last-child { margin-bottom: 0; }
+
+        .match-emoji { width: 90px; height: 90px; margin-right: 20px; text-align: center; flex-shrink: 0; }
+        .match-emoji img { width: 100%; height: 100%; object-fit: contain; }
+        .match-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .match-card { display: flex; align-items: center; padding: 12px; border-radius: 15px; text-align: left; border: 1px solid rgba(0,0,0,0.05); background: #fff; }
+        .match-card.good { background: #e8f5e9; color: #2e7d32; border-left: 5px solid #4caf50; }
+        .match-card.bad { background: #ffebee; color: #c62828; border-left: 5px solid #e53935; }
+        .match-info h4 { margin: 0 0 3px 0; font-size: 0.8rem; opacity: 0.8; text-transform: uppercase; }
+        .match-info .name { font-weight: bold; font-size: 1.1rem; display: block; }
+        .match-info .reason { font-size: 0.85rem; opacity: 0.9; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <audio id="bgm" loop><source src="BGM.mp3" type="audio/mpeg"></audio>
+    <div class="container">
+        <div class="audio-control" id="mute-btn" onclick="toggleAudio()">🔈</div>
+        <div id="start-screen">
+            <h1 style="font-size: 2rem; margin-bottom: 5px;">皮克敏性格圖鑑</h1>
+            <div style="font-size: 0.9rem; background: #e8f5e9; display: inline-block; padding: 5px 15px; border-radius: 20px; color: #2e7d32; margin-bottom: 20px; border:1px solid #c8e6c9;">心理測驗 x 召集遊戲</div>
+            <p class="subtitle">嗶——！全員集合！<br>在這顆未知的星球上，<br>你是哪種不可或缺的小夥伴？</p>
+            <div class="home-pikmin-squad">
+                <img src="images/red-pikmin.png">
+                <img src="images/blue-pikmin.png">
+                <img src="images/yellow-pikmin.png">
+                <img src="images/purple-pikmin.png">
+                <img src="images/white-pikmin.png">
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()">🌱 拔出自己！(開始測驗)</button>
+            <button class="btn btn-info" onclick="showIntro()">📖 皮克敏生態 & 遊戲</button>
+        </div>
+        
+        <div id="intro-screen" class="hidden">
+            <div class="guide-book">
+                <h3 style="margin-top:0; color:#f57f17; text-align:center; border-bottom:2px dashed #fbc02d; padding-bottom:10px;">🌿 探險家日誌</h3>
+                <p style="font-size:0.8rem; color:#888; text-align:center;">點擊下方列表展開詳細資料 ▼</p>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/red-pikmin.png" class="guide-icon icon-red" alt="紅色皮克敏"> 紅色皮克敏</summary><div class="guide-content"><p><b>日誌 001：</b>這些小傢伙是隊伍的先鋒。他們的鬥志就像他們身體的顏色一樣火熱。只要有戰鬥，派他們上場準沒錯。最神奇的是，火焰對他們完全無效，有時我甚至覺得他們很享受溫暖的感覺。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/yellow-pikmin.png" class="guide-icon icon-yellow" alt="黃色皮克敏"> 黃色皮克敏</summary><div class="guide-content"><p><b>日誌 002：</b>他們的大耳朵非常顯眼，似乎讓他們的身體特別輕盈。我能把他們丟到其他皮克敏無法企及的高處。他們對電有著天生的免疫力，處理電路障礙時，他們是唯一的人選。挖掘工作也特別在行。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/blue-pikmin.png" class="guide-icon icon-blue" alt="藍色皮克敏"> 藍色皮克敏</summary><div class="guide-content"><p><b>日誌 003：</b>唯一能讓我安心度過水域的夥伴。他們嘴邊的構造類似鰓，使他們能在水中自由行動。在其他皮克敏都對水避之唯恐不及時，只有他們能下水作戰、打撈沉在水底的寶物。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/purple-pikmin.png" class="guide-icon icon-purple" alt="紫色皮克敏"> 紫色皮克敏</summary><div class="guide-content"><p><b>日誌 004：</b>我的隊伍裡的重量級冠軍。一個紫色皮克敏的力氣和重量，相當於十個普通皮克敏。搬運沉重的物品時不可或缺。把他們投擲出去時產生的衝擊波，甚至能震暈周圍的敵人，非常可靠。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/white-pikmin.png" class="guide-icon icon-white" alt="白色皮克敏"> 白色皮克敏</summary><div class="guide-content"><p><b>日誌 005：</b>體型最小，速度卻最快。他們那雙紅色的眼睛在黑暗中格外顯眼。白色皮克敏是天生的偵察兵，能迅速勘查地形，而且體內有毒。雖然這聽起來有點危險，但在對付會吞食皮克敏的敵人時，這項特性就成了致命武器。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/rock-pikmin.png" class="guide-icon icon-rock" alt="岩石皮克敏"> 岩石皮克敏</summary><div class="guide-content"><p><b>日誌 006：</b>堅硬、可靠、有點呆萌。他們的身體就像打磨過的光滑岩石，能輕易砸碎水晶牆。原生生物想踩扁他們是絕對不可能的。投擲他們時那「咚」的一聲，聽起來就很有破壞力。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/winged-pikmin.png" class="guide-icon icon-pink" alt="羽翅皮克敏"> 羽翅皮克敏</summary><div class="guide-content"><p><b>日誌 007：</b>我的空中部隊。粉紅色的身體加上一對小翅膀，讓他們可以輕鬆飛越地面上的障礙和水坑。在搬運路線複雜時，他們總能找到最短的空中直線距離，大大提升了效率。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/ice-pikmin.png" class="guide-icon icon-ice" alt="冰皮克敏"> 冰皮克敏</summary><div class="guide-content"><p><b>日誌 008：</b>最近才發現的新品種，身體像冰塊一樣晶瑩剔透。他們是天生的控場大師，不僅能冰凍水面，讓我們安全通過，還能把敵人凍成冰塊，為我們爭取寶貴的攻擊時間。真是「Cool」的夥伴。</p></div></details>
+                <details class="guide-item"><summary class="guide-summary"><img src="images/glow-pikmin.png" class="guide-icon icon-glow" alt="光皮克敏"> 光皮克敏</summary><div class="guide-content"><p><b>日誌 009：</b>只在夜間現身的神秘生物。他們像綠色的鬼火，免疫所有環境傷害。最驚人的是，他們能聚集成一顆光球發動衝撞攻擊，在黑暗中是我們最可靠的光芒。</p></div></details>
+            </div>
+            <button id="game-toggle-btn" class="btn btn-primary" onclick="openGame()">哨子 集合！ (開始遊戲)</button>
+            <div id="game-wrapper" class="hidden">
+                <div class="game-container" id="game-area">
+                    <div class="hud"><span class="hud-item">TIME: <span id="game-time">45</span></span><span class="hud-item">SCORE: <span id="game-score">0</span></span></div>
+                    <div id="pikmin-field"></div>
+                    <div id="whistle"></div>
+                    <div id="game-start-overlay" class="game-overlay">
+                        <div style="font-size: 3rem;">😗</div><h2>皮克敏大集合！</h2>
+                        <p style="font-size:0.9rem; text-align:center; max-width: 250px;">移動滑鼠，找到地圖上的皮克敏。<br><b>按住滑鼠左鍵</b>吹響哨子來召集他們！</p>
+                        <button class="btn btn-info" style="width:auto;" onclick="startGame()">開始</button>
+                        <button class="btn btn-secondary" style="width:auto; margin-top:10px;" onclick="closeGame()">離開</button>
+                    </div>
+                    <div id="game-end-overlay" class="game-overlay hidden">
+                        <div style="font-size: 4rem;">🏆</div><h2>時間到！</h2><p id="final-score-text">總共召集了 0 隻</p>
+                        <button class="btn btn-info" style="width:auto;" onclick="startGame()">再來一局</button>
+                        <button class="btn btn-secondary" style="width:auto; margin-top:10px;" onclick="closeGame()">離開</button>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:20px;"><button class="btn btn-secondary" onclick="goBack()">返回首頁</button></div>
+        </div>
+        
+        <div id="quiz-screen" class="hidden">
+            <div class="progress-container"><div class="progress-fill" id="progress"></div></div>
+            <h2 id="question-text" style="font-size: 1.3rem; margin-bottom: 30px; color: #333; font-weight: bold;">載入中...</h2>
+            <div id="options-container"></div>
+        </div>
+        
+        <div id="result-screen" class="result-box hidden">
+            <div class="result-header">
+                <div class="result-avatar"><img id="result-icon" src="" alt="你的本命皮克敏"></div>
+                <div style="color:#fff; font-size:1rem;">你的本命皮克敏</div>
+                <div id="result-title" class="result-title"></div>
+            </div>
+
+            <div id="result-details" class="result-details">
+            </div>
+
+            <div class="match-container">
+                <div class="match-card good"><div class="match-emoji" id="good-match-icon"></div><div class="match-info"><h4>💖 最佳拍檔</h4><span class="name" id="good-match-name"></span><span class="reason" id="good-match-reason"></span></div></div>
+                <div class="match-card bad"><div class="match-emoji" id="bad-match-icon"></div><div class="match-info"><h4>⚡ 磨合夥伴</h4><span class="name" id="bad-match-name"></span><span class="reason" id="bad-match-reason"></span></div></div>
+            </div>
+            <button class="btn btn-primary" onclick="location.reload()">再測一次</button>
+            <a href="https://www.nintendo.com/jp/character/pikmin/index.html" target="_blank" class="btn btn-secondary" style="background-color:#e60012; color:white; box-shadow: 0 5px 0 #a3000d;">任天堂官網 ↗</a>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext; const ctx = new AudioContext(); let isMuted = true; let whistleSound = null;
+        const bgm = document.getElementById('bgm'); bgm.volume = 0.3;
+        function toggleAudio() { const btn = document.getElementById('mute-btn'); isMuted = !isMuted; if(isMuted) { btn.innerText = "🔈"; bgm.pause(); if (whistleSound) whistleSound.stop(); } else { btn.innerText = "🔊"; if (ctx.state === 'suspended') ctx.resume(); bgm.play().catch(e => console.log("Blocked")); sfx('click'); } }
+        
+        function sfx(type, loop = false) {
+            if (isMuted) return null;
+            if (ctx.state === 'suspended') ctx.resume();
+            
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            const now = ctx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(300, now + 0.1); gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'whistle-short') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(1500, now); osc.frequency.linearRampToValueAtTime(1800, now + 0.05); gain.gain.setValueAtTime(0.06, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'whistle-loop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1600, now);
+                gain.gain.setValueAtTime(0.05, now);
+                osc.loop = loop;
+                osc.start(now);
+                return { osc, gain };
+            } else if (type === 'cancel' || type === 'gameover') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(100, now + 0.2); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2);
+            }
+            return null;
+        }
+        
+        window.toggleAudio = toggleAudio;
+        window.showIntro = () => { document.getElementById('start-screen').classList.add('hidden'); document.getElementById('intro-screen').classList.remove('hidden'); document.querySelector('.container').scrollTop = 0; };
+        window.goBack = () => { document.getElementById('intro-screen').classList.add('hidden'); document.getElementById('start-screen').classList.remove('hidden'); stopGame(); };
+        window.startQuiz = () => { sfx('click'); document.getElementById('start-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden'); renderQuestion(); };
+        window.openGame = () => { sfx('click'); document.getElementById('game-wrapper').classList.remove('hidden'); document.getElementById('game-toggle-btn').classList.add('hidden'); };
+        window.closeGame = () => { sfx('cancel'); stopGame(); document.getElementById('game-wrapper').classList.add('hidden'); document.getElementById('game-toggle-btn').classList.remove('hidden'); };
+
+        let scores = { red: 0, rock: 0, yellow: 0, pink: 0, blue: 0, purple: 0, white: 0, ice: 0, glow: 0 };
+        const questions = [ { text: "前方有一條小河擋住了去路，你會？", options: [{ text: "直接走過去，看看會發生什麼", type: "blue" }, { text: "尋找最短的路徑，用力量跳過去！", type: "purple" }, { text: "飛過去探路，回報給隊友", type: "pink" }, { text: "試著把河面結凍，製造一條路", type: "ice" }] }, { text: "發現一個從沒見過的神祕洞窟，你會？", options: [{ text: "第一個衝進去，看看有什麼寶物", type: "red" }, { text: "在洞口仔細觀察，分析危險性", type: "white" }, { text: "等到晚上再進去，黑暗中我最強", type: "glow" }, { text: "這看起來很堅固，應該很安全", type: "rock" }] }, { text: "團隊需要搬運一個巨大的電池，你會？", options: [{ text: "我力氣最大，交給我吧！", type: "purple" }, { text: "我來規劃最有效率的搬運路線", type: "yellow" }, { text: "我雖然搬不動，但我可以幫忙清除路上的小障礙", type: "white" }, { text: "大家一起合作，一定沒問題！", type: "blue" }] }, { text: "遇到一隻看起來很兇的原生生物，你會？", options: [{ text: "正面迎擊！展現我們的勇氣！", type: "red" }, { text: "用身體把它撞開，保護大家", type: "rock" }, { text: "先讓它冷靜一下，或許不用戰鬥", type: "ice" }, { text: "從空中進行騷擾攻擊", type: "pink" }] }, { text: "在夜晚的營地，你通常會做什麼？", options: [{ text: "獨自巡邏，守護營地的安全", type: "glow" }, { text: "和大家聚在一起，分享今天的冒險", type: "yellow" }, { text: "安靜地待在水邊，享受片刻的寧靜", type: "blue" }, { text: "鍛鍊身體，為明天的挑戰做準備", type: "purple" }] } ];
+        
+        const results = {
+            red:    { title: "熱血紅色皮克敏", image: "images/red-pikmin.png",
+                      desc: "你是團隊的箭頭，擁有火焰般的熱情和超群的攻擊力。遇到困難時，大家只要看到你衝在最前面，就會充滿勇氣。你相信行動勝於一切，喜歡用最直接的方式解決問題。",
+                      details: { "👍 優點": "行動力強、勇敢、值得信賴、目標導向。", "👎 潛在弱點": "有時可能過於衝動，缺乏耐心，不太會考慮替代方案。", "💡 探險小提示": "在衝鋒前，試著先聽聽藍色皮克敏的建議，或許能讓任務更順利！" },
+                      matches: { good: { type: "blue", reason: "你的熱情配上他的冷靜，是完美的平衡。" }, bad: { type: "ice", reason: "你覺得他太過冷靜，有時會澆熄你的鬥志。" } } },
+            yellow: { title: "樂天黃色皮克敏", image: "images/yellow-pikmin.png",
+                      desc: "你有著大大的耳朵，善於傾聽也充滿好奇心。你不怕觸電般的困難，總能跳得很高，帶領大家看到事情樂觀的一面。你是團隊中的氣氛製造者，有你在就不會無聊。",
+                      details: { "👍 優點": "樂觀、有創意、善於溝通、適應力強。", "👎 潛在弱點": "有時可能不夠專注，容易被新奇的事物吸引而分心。", "💡 探險小提示": "你的跳躍能力讓你總能看到別人看不到的機會，大膽分享你的發現吧！" },
+                      matches: { good: { type: "pink", reason: "你們都是樂天派，在一起總有聊不完的話題。" }, bad: { type: "purple", reason: "他太沉默寡言了，讓你覺得氣氛有點沉悶。" } } },
+            blue:   { title: "沉穩藍色皮克敏", image: "images/blue-pikmin.png",
+                      desc: "你像水一樣沉著冷靜，是團隊中安定的力量。無論遇到多大的風浪，你都能保持平常心，帶領大家安然度過。你深思熟慮，是團隊中最可靠的參謀。",
+                      details: { "👍 優點": "冷靜、有耐心、思考周全、值得依靠。", "👎 潛在弱點": "有時可能過於謹慎而錯失良機，行動前需要較多的準備時間。", "💡 探險小提示": "當團隊陷入混亂時，你的冷靜判斷是引導大家前進的關鍵力量。" },
+                      matches: { good: { type: "red", reason: "他能點燃你的行動力，而你能讓他保持冷靜。" }, bad: { type: "white", reason: "你覺得他跑得太快，讓你有點跟不上節奏。" } } },
+            purple: { title: "可靠紫色皮克敏", image: "images/purple-pikmin.png",
+                      desc: "你是團隊中最強壯的後盾，擁有十倍的力量與重量。雖然不善言辭，但你總是用行動證明自己是大家最可靠的夥伴。你默默地扛起了最多的重擔。",
+                      details: { "👍 優點": "強大、可靠、有毅力、腳踏實地。", "👎 潛在弱點": "不善於表達自己，有時會給人一種笨拙或遲鈍的印象。", "💡 探險小提示": "你的力量不僅能搬運重物，在關鍵時刻也能成為擊暈敵人的王牌！" },
+                      matches: { good: { type: "white", reason: "他的敏捷偵查，配上你的壓倒性力量，無人能敵。" }, bad: { type: "yellow", reason: "他太活潑了，有時候讓你覺得有點吵鬧。" } } },
+            white:  { title: "敏銳白色皮克敏", image: "images/white-pikmin.png",
+                      desc: "你身手矯健，速度飛快，是團隊裡的偵查專家。你有著敏銳的洞察力，能發現別人看不到的細節和地下的寶物。你總是第一個發現危險或機會的人。",
+                      details: { "👍 優點": "反應快、洞察力敏銳、效率高、直覺準確。", "👎 潛在弱點": "可能缺乏耐心，對於慢節奏的夥伴會感到不耐煩。", "💡 探險小提示": "你的速度是團隊的雙面刃，既能快速探路，也要小心不要衝太快而落單！" },
+                      matches: { good: { type: "purple", reason: "你的速度配上他的力量，是完美的突擊組合。" }, bad: { type: "blue", reason: "他總是慢悠悠的，讓你覺得有點心急。" } } },
+            rock:   { title: "堅毅岩石皮克敏", image: "images/rock-pikmin.png",
+                      desc: "外表剛硬，內心單純。你不喜歡花言巧語，總是用最實際的行動（和堅硬的身體）來為團隊開路、守護大家。你是團隊中最堅固的防線。",
+                      details: { "👍 優點": "堅定、有原則、保護欲強、非常可靠。", "👎 潛在弱點": "有時可能過於固執，不懂變通，難以接受新想法。", "💡 探險小提示": "你的堅硬不只能用來防禦，更是砸開水晶、開闢新道路的關鍵！" },
+                      matches: { good: { type: "red", reason: "你需要一個能帶領方向的人，而他需要一個堅實的靠山。" }, bad: { type: "glow", reason: "你習慣在陽光下行動，不太適應他的晝伏夜出。" } } },
+            pink:   { title: "自由羽翅皮克敏", image: "images/winged-pikmin.png",
+                      desc: "你討厭走尋常路，喜歡飛在空中找捷徑。雖然有時稍微狀況外，但你的創意和獨特視角總能為團隊帶來奇蹟，找到意想不到的解決方案。",
+                      details: { "👍 優點": "有遠見、思維靈活、擅長多工處理、不拘一格。", "👎 潛在弱點": "有時可能不夠務實，想法天馬行空但難以執行。", "💡 探險小提示": "從高處俯瞰全局是你的天賦，記得將你看到的特殊路線分享給夥伴！" },
+                      matches: { good: { type: "yellow", reason: "他能理解你天馬行空的點子，並為你喝采。" }, bad: { type: "rock", reason: "你喜歡自由飛行，他卻總在地上讓你覺得受限。" } } },
+            ice:    { title: "冷靜冰皮克敏", image: "images/ice-pikmin.png",
+                      desc: "你頭腦清晰，遇事冷靜，是團隊的策略家。你能凍結威脅、鋪平水路，在混亂中保持分析能力，總能在關鍵時刻做出最「Cool」的判斷。",
+                      details: { "👍 優點": "分析能力強、沉著、有條理、善於解決問題。", "👎 潛在弱點": "可能帶給人一種冷漠或疏離的感覺，情感表達較為內斂。", "💡 探險小提示": "你的冰凍能力是團隊最強的控場技，善用它來改變戰局吧！" },
+                      matches: { good: { type: "glow", reason: "你們都喜歡在安靜的環境思考，很有默契。" }, bad: { type: "red", reason: "他的魯莽行事，時常打亂你深思熟慮的計畫。" } } },
+            glow:   { title: "神秘光皮克敏", image: "images/glow-pikmin.png",
+                      desc: "你是黑夜中的一道光，神秘而強大。你習慣在安靜的環境中獨立思考，雖然有點獨來獨往，卻是大家在黑暗或迷茫中可以依靠的指引。",
+                      details: { "👍 優點": "獨立、直覺敏銳、內心強大、不受外界干擾。", "👎 潛在弱點": "不喜歡過多的社交，有時會顯得孤僻，難以融入團隊。", "💡 探險小提示": "你無懼任何屬性的特質讓你成為萬能鑰匙，在最艱困的環境中你就是希望！" },
+                      matches: { good: { type: "ice", reason: "你們都享受孤獨，能理解對方需要個人空間。" }, bad: { type: "rock", reason: "你喜歡輕盈地穿梭，而他堅實的步伐讓你感到笨重。" } } }
+        };
+        let currentQuestionIndex = 0;
+        function renderQuestion() {
+            const questionTextElement = document.getElementById('question-text');
+            const optionsDivElement = document.getElementById('options-container');
+            const progressElement = document.getElementById('progress');
+            if (!questionTextElement || !optionsDivElement || !progressElement) { return; }
+            if (currentQuestionIndex >= questions.length) { progressElement.style.width = `100%`; setTimeout(showResult, 400); return; } 
+            const question = questions[currentQuestionIndex]; 
+            questionTextElement.innerText = question.text; 
+            optionsDivElement.innerHTML = ''; 
+            const progress = 10 + ((currentQuestionIndex) / questions.length) * 90; 
+            progressElement.style.width = `${progress}%`; 
+            const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5); 
+            shuffledOptions.forEach(option => { 
+                const btn = document.createElement('button'); 
+                btn.className = 'btn option-btn'; btn.innerText = option.text; 
+                btn.onclick = () => { sfx('click'); scores[option.type]++; currentQuestionIndex++; renderQuestion(); }; 
+                optionsDivElement.appendChild(btn); 
+            }); 
+        }
+        
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden'); document.getElementById('result-screen').classList.remove('hidden'); sfx('whistle-short');
+            const winnerType = Object.keys(scores).reduce((a, b) => scores[a] >= scores[b] ? a : b);
+            const data = results[winnerType];
+            const goodMatch = results[data.matches.good.type];
+            const badMatch = results[data.matches.bad.type];
+            document.getElementById('result-icon').src = data.image;
+            document.getElementById('result-title').innerText = data.title;
+            const detailsContainer = document.getElementById('result-details');
+            detailsContainer.innerHTML = `<h4>性格側寫</h4><p>${data.desc}</p><h4>👍 優點</h4><p>${data.details["👍 優點"]}</p><h4>👎 潛在弱點</h4><p>${data.details["👎 潛在弱點"]}</p><h4>💡 探險小提示</h4><p>${data.details["💡 探險小提示"]}</p>`;
+            document.getElementById('good-match-icon').innerHTML = `<img src="${goodMatch.image}" alt="${goodMatch.title}">`;
+            document.getElementById('good-match-name').innerText = goodMatch.title.replace("皮克敏", "");
+            document.getElementById('good-match-reason').innerText = data.matches.good.reason;
+            document.getElementById('bad-match-icon').innerHTML = `<img src="${badMatch.image}" alt="${badMatch.title}">`;
+            document.getElementById('bad-match-name').innerText = badMatch.title.replace("皮克敏", "");
+            document.getElementById('bad-match-reason').innerText = data.matches.bad.reason;
+        }
+
+        let gameScore = 0, gameTime = 45, isPlaying = false, gameTimer, gameLoopInterval;
+        let whistle, gameArea, pikminField;
+        const pikminImagePaths = [ "images/red-pikmin.png", "images/yellow-pikmin.png", "images/blue-pikmin.png", "images/rock-pikmin.png", "images/ice-pikmin.png", "images/winged-pikmin.png", "images/white-pikmin.png", "images/purple-pikmin.png", "images/glow-pikmin.png" ];
+
+        window.startGame = function() {
+            sfx('click'); gameScore = 0; gameTime = 45; isPlaying = true;
+            whistle = document.getElementById('whistle');
+            gameArea = document.getElementById('game-area');
+            pikminField = document.getElementById('pikmin-field');
+            pikminField.innerHTML = '';
+            document.getElementById('game-score').innerText = gameScore;
+            document.getElementById('game-time').innerText = gameTime;
+            document.getElementById('game-start-overlay').classList.add('hidden');
+            document.getElementById('game-end-overlay').classList.add('hidden');
+            gameArea.addEventListener('mousemove', moveWhistle);
+            gameArea.addEventListener('mousedown', activateWhistle);
+            gameArea.addEventListener('mouseup', deactivateWhistle);
+            gameArea.addEventListener('mouseleave', deactivateWhistle);
+            gameTimer = setInterval(() => { gameTime--; document.getElementById('game-time').innerText = gameTime; if (gameTime <= 0) endGame(); }, 1000);
+            gameLoopInterval = setInterval(gameLoopLogic, 100);
+            spawnPikmin();
+        }
+        window.stopGame = function() {
+            isPlaying = false;
+            clearInterval(gameTimer);
+            clearInterval(gameLoopInterval);
+            if (gameArea) {
+                gameArea.removeEventListener('mousemove', moveWhistle);
+                gameArea.removeEventListener('mousedown', activateWhistle);
+                gameArea.removeEventListener('mouseup', deactivateWhistle);
+                gameArea.removeEventListener('mouseleave', deactivateWhistle);
+            }
+            deactivateWhistle();
+        }
+        function moveWhistle(e) { const rect = gameArea.getBoundingClientRect(); whistle.style.left = `${e.clientX - rect.left}px`; whistle.style.top = `${e.clientY - rect.top}px`; }
+        
+        function activateWhistle() { 
+            if(isPlaying) {
+                whistle.classList.add('active');
+                if (!whistleSound) {
+                    const sound = sfx('whistle-loop', true);
+                    if (sound) whistleSound = sound.osc;
+                }
+            }
+        }
+        function deactivateWhistle() { 
+            if(isPlaying) {
+                whistle.classList.remove('active');
+                if (whistleSound) { whistleSound.stop(); whistleSound = null; }
+            }
+        }
+
+        function spawnPikmin() {
+            if (!isPlaying || pikminField.children.length > 15) return;
+            const pik = document.createElement('div'); pik.className = 'wandering-pikmin';
+            const img = document.createElement('img'); img.src = pikminImagePaths[Math.floor(Math.random() * pikminImagePaths.length)];
+            pik.appendChild(img);
+            pik.style.left = `${Math.random() * (gameArea.offsetWidth - 40)}px`;
+            pik.style.top = `${Math.random() * (gameArea.offsetHeight - 40)}px`;
+            pikminField.appendChild(pik);
+        }
+        function gameLoopLogic() {
+            if (!isPlaying) return;
+            if (Math.random() < 0.5) spawnPikmin();
+            const whistleRect = whistle.getBoundingClientRect();
+            const isWhistleActive = whistle.classList.contains('active');
+            for (let pik of pikminField.children) {
+                if (pik.classList.contains('collected')) continue;
+                if (Math.random() < 0.1) {
+                    const dx = (Math.random() - 0.5) * 30; const dy = (Math.random() - 0.5) * 30;
+                    const newX = Math.max(0, Math.min(gameArea.offsetWidth - 40, pik.offsetLeft + dx));
+                    const newY = Math.max(0, Math.min(gameArea.offsetHeight - 40, pik.offsetTop + dy));
+                    pik.style.transform = `translate(${newX - pik.offsetLeft}px, ${newY - pik.offsetTop}px)`;
+                }
+                if (isWhistleActive) {
+                    const pikRect = pik.getBoundingClientRect();
+                    if (whistleRect.left < pikRect.right && whistleRect.right > pikRect.left &&
+                        whistleRect.top < pikRect.bottom && whistleRect.bottom > pikRect.top) {
+                        collectPikmin(pik);
+                    }
+                }
+            }
+        }
+        function collectPikmin(pik) {
+            pik.classList.add('collected'); sfx('whistle-short'); gameScore++;
+            document.getElementById('game-score').innerText = gameScore;
+            setTimeout(() => pik.remove(), 400);
+        }
+        function endGame() {
+            stopGame(); sfx('gameover');
+            document.getElementById('game-end-overlay').classList.remove('hidden');
+            document.getElementById('final-score-text').innerText = `總共召集了 ${gameScore} 隻`;
+        }
+
+    });
+    </script>
+</body>
+</html>
